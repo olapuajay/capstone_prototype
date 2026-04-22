@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Sora", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #04070d;
+}
+
+h1,
+h2,
+h3,
+.brand-font {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.glass-panel {
+  @apply rounded-2xl border border-white/10 bg-slate-900/60 shadow-panel backdrop-blur;
+}
+
+.card-enter {
+  animation: fadeUp 450ms ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
