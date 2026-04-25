@@ -70,3 +70,27 @@ Admin headers for protected routes:
 - This is simulation-based IoT; no physical GPS hardware is needed.
 - Backend emits updates at a fixed 5-second interval.
 - Frontend build has been validated successfully.
+
+## Screenshots
+
+Add the screenshot files under `docs/screenshots/` with the names shown below.
+
+### Live Tracker (Route Focus)
+
+![Live Tracker - Selected Bus](docs/screenshots/live-tracker-selected-bus.png)
+
+### Admin Login
+
+![Admin Login](docs/screenshots/admin-login.png)
+
+### Admin Dashboard (Top Section)
+
+![Admin Dashboard - Top](docs/screenshots/admin-dashboard-top.png)
+
+### Admin Dashboard (Configured Routes)
+
+![Admin Dashboard - Configured Routes](docs/screenshots/admin-dashboard-configured-routes.png)
+
+### Live Tracker (All Buses)
+
+![Live Tracker - All Buses](docs/screenshots/live-tracker-all-buses.png)
