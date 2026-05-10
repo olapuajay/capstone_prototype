@@ -17,14 +17,14 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PUT"],
   },
 });
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
   }),
 );
 app.use(express.json());
@@ -50,6 +50,10 @@ app.post("/api/admin/login", (req, res) => {
 
 app.use("/api/buses", busRoutes);
 app.use("/api/routes", routeRoutes);
+
+app.get("/", (req, res) => {
+  res.send({ message: "Hello from server!" });
+});
 
 const PORT = process.env.PORT || 5000;
 
