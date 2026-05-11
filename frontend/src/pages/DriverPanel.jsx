@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Truck, AlertCircle, Send } from "lucide-react";
 import { useAuthContext } from "../context/AuthContext";
 
 const DriverPanel = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuthContext();
   const [assignedBus, setAssignedBus] = useState(null);
   const [busStatus, setBusStatus] = useState("Running");
@@ -65,17 +67,17 @@ const DriverPanel = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12">{t("common.loading")}</div>;
   }
 
   if (!assignedBus) {
     return (
       <div className="glass-panel rounded-2xl p-8 text-center space-y-4">
         <AlertCircle size={48} className="mx-auto text-yellow-400" />
-        <h2 className="font-semibold text-slate-100">No Bus Assigned</h2>
-        <p className="text-slate-400">
-          Contact admin to get a bus assigned to your account.
-        </p>
+        <h2 className="font-semibold text-slate-100">
+          {t("driver.panel.noBusAssigned")}
+        </h2>
+        <p className="text-slate-400">{t("driver.panel.contactAdmin")}</p>
       </div>
     );
   }
@@ -85,9 +87,9 @@ const DriverPanel = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="brand-font text-3xl font-bold text-slate-50">
-            Driver Panel
+            {t("driver.panel.welcome", { name: user?.name })}
           </h1>
-          <p className="text-slate-400">Welcome, {user?.name}</p>
+          <p className="text-slate-400">{t("driver.panel.subtitle")}</p>
         </div>
         <button
           onClick={() => {
@@ -96,7 +98,7 @@ const DriverPanel = () => {
           }}
           className="rounded-full bg-red-500/20 px-4 py-2 text-sm text-red-300 hover:bg-red-500/30 transition"
         >
-          Logout
+          {t("common.logout")}
         </button>
       </div>
 
@@ -105,30 +107,38 @@ const DriverPanel = () => {
         <div className="lg:col-span-2 glass-panel rounded-2xl p-6 space-y-4">
           <h2 className="font-semibold text-slate-100 flex items-center gap-2">
             <Truck className="text-accent" />
-            Your Assigned Bus
+            {t("driver.panel.assignedBus")}
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="bg-slate-800/50 p-4 rounded-lg">
-              <p className="text-xs text-slate-400 mb-1">Bus Number</p>
+              <p className="text-xs text-slate-400 mb-1">
+                {t("driver.panel.number")}
+              </p>
               <p className="text-lg font-bold text-accent">
                 {assignedBus.busNumber}
               </p>
             </div>
             <div className="bg-slate-800/50 p-4 rounded-lg">
-              <p className="text-xs text-slate-400 mb-1">Bus Name</p>
+              <p className="text-xs text-slate-400 mb-1">
+                {t("driver.panel.name")}
+              </p>
               <p className="text-lg font-bold text-slate-100">
                 {assignedBus.name}
               </p>
             </div>
             <div className="bg-slate-800/50 p-4 rounded-lg">
-              <p className="text-xs text-slate-400 mb-1">Route</p>
+              <p className="text-xs text-slate-400 mb-1">
+                {t("driver.panel.route")}
+              </p>
               <p className="text-lg font-bold text-slate-100">
                 {assignedBus.route.name}
               </p>
             </div>
             <div className="bg-slate-800/50 p-4 rounded-lg">
-              <p className="text-xs text-slate-400 mb-1">Current Speed</p>
+              <p className="text-xs text-slate-400 mb-1">
+                {t("driver.panel.speed")}
+              </p>
               <p className="text-lg font-bold text-accent">
                 {assignedBus.speed} km/h
               </p>
@@ -143,22 +153,34 @@ const DriverPanel = () => {
 
           {/* Status Update Form */}
           <div className="space-y-4 pt-4 border-t border-white/10">
-            <h3 className="font-semibold text-slate-100">Update Bus Status</h3>
+            <h3 className="font-semibold text-slate-100">
+              {t("driver.panel.statusUpdate")}
+            </h3>
 
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-slate-200">
-                Bus Status
+                {t("driver.panel.newStatus")}
               </label>
               <select
                 value={busStatus}
                 onChange={(e) => setBusStatus(e.target.value)}
                 className="w-full bg-slate-800/50 border border-white/10 rounded-lg px-3 py-2.5 text-slate-100"
               >
-                <option value="Running">Running</option>
-                <option value="Delayed">Delayed</option>
-                <option value="Heavy Traffic">Heavy Traffic</option>
-                <option value="Breakdown">Breakdown</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Running">
+                  {t("driver.panel.statuses.Running")}
+                </option>
+                <option value="Delayed">
+                  {t("driver.panel.statuses.Delayed")}
+                </option>
+                <option value="Heavy Traffic">
+                  {t("driver.panel.statuses.Heavy Traffic")}
+                </option>
+                <option value="Breakdown">
+                  {t("driver.panel.statuses.Breakdown")}
+                </option>
+                <option value="Inactive">
+                  {t("driver.panel.statuses.Inactive")}
+                </option>
               </select>
             </div>
 
@@ -166,25 +188,37 @@ const DriverPanel = () => {
               <>
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-200">
-                    Delay Reason
+                    {t("driver.panel.delayReason")}
                   </label>
                   <select
                     value={delayReason}
                     onChange={(e) => setDelayReason(e.target.value)}
                     className="w-full bg-slate-800/50 border border-white/10 rounded-lg px-3 py-2.5 text-slate-100"
                   >
-                    <option value="none">None</option>
-                    <option value="traffic">Heavy Traffic</option>
-                    <option value="road_construction">Road Construction</option>
-                    <option value="weather">Weather</option>
-                    <option value="mechanical">Mechanical Issue</option>
-                    <option value="crowd">Passenger Crowd</option>
+                    <option value="none">
+                      {t("driver.panel.reasons.none")}
+                    </option>
+                    <option value="traffic">
+                      {t("driver.panel.reasons.traffic")}
+                    </option>
+                    <option value="road_construction">
+                      {t("driver.panel.reasons.road_construction")}
+                    </option>
+                    <option value="weather">
+                      {t("driver.panel.reasons.weather")}
+                    </option>
+                    <option value="mechanical">
+                      {t("driver.panel.reasons.mechanical")}
+                    </option>
+                    <option value="crowd">
+                      {t("driver.panel.reasons.crowd")}
+                    </option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-200">
-                    Delay Minutes
+                    {t("driver.panel.delayMinutes")}
                   </label>
                   <input
                     type="number"
@@ -203,7 +237,7 @@ const DriverPanel = () => {
               className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-slate-950 font-semibold py-2.5 rounded-lg transition"
             >
               <Send size={18} />
-              Update Status
+              {t("driver.panel.updateBtn")}
             </button>
           </div>
         </div>
@@ -217,7 +251,9 @@ const DriverPanel = () => {
                 : "border-red-500/30"
             }`}
           >
-            <p className="text-xs text-slate-400 mb-2">Current Status</p>
+            <p className="text-xs text-slate-400 mb-2">
+              {t("driver.panel.currentStatus")}
+            </p>
             <p
               className={`text-2xl font-bold ${
                 assignedBus.status === "Running"
@@ -225,12 +261,14 @@ const DriverPanel = () => {
                   : "text-red-400"
               }`}
             >
-              {assignedBus.status}
+              {t(`driver.panel.statuses.${assignedBus.status}`)}
             </p>
           </div>
 
           <div className="glass-panel p-4 rounded-lg">
-            <p className="text-xs text-slate-400 mb-2">Passengers On Board</p>
+            <p className="text-xs text-slate-400 mb-2">
+              {t("driver.panel.currentPassengers")}
+            </p>
             <p className="text-2xl font-bold text-accent">
               {assignedBus.currentPassengers}/{assignedBus.capacity}
             </p>
@@ -246,12 +284,16 @@ const DriverPanel = () => {
 
           {assignedBus.delayMinutes > 0 && (
             <div className="glass-panel p-4 rounded-lg border border-yellow-500/30">
-              <p className="text-xs text-slate-400 mb-2">Delay Information</p>
+              <p className="text-xs text-slate-400 mb-2">
+                {t("driver.panel.delay")}
+              </p>
               <p className="text-sm text-yellow-300">
-                <strong>{assignedBus.delayMinutes} mins delay</strong>
+                <strong>
+                  {assignedBus.delayMinutes} {t("driver.panel.delayMinutes")}
+                </strong>
               </p>
               <p className="text-xs text-slate-400 mt-1 capitalize">
-                Reason: {assignedBus.delayReason?.replace("_", " ")}
+                {t(`driver.panel.reasons.${assignedBus.delayReason}`)}
               </p>
             </div>
           )}
