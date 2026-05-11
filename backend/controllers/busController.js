@@ -13,12 +13,16 @@ const shapeBusPayload = (busDoc) => {
 
   return {
     id: busDoc._id,
+    busNumber: busDoc.busNumber,
     name: busDoc.name,
     speed: busDoc.speed,
     status: busDoc.status,
     delayMinutes: busDoc.delayMinutes,
+    delayReason: busDoc.delayReason,
     currentPointIndex: busDoc.currentPointIndex,
     currentLocation: busDoc.currentLocation,
+    currentPassengers: busDoc.currentPassengers,
+    capacity: busDoc.capacity,
     route: {
       id: busDoc.route?._id,
       name: busDoc.route?.name,
@@ -28,6 +32,8 @@ const shapeBusPayload = (busDoc) => {
     },
     etaToNextStop,
     nextStop,
+    driver: busDoc.driver,
+    lastUpdateTime: busDoc.lastUpdateTime,
   };
 };
 
@@ -68,5 +74,31 @@ export const getBusAnalytics = async (_req, res) => {
     return res.json({ total, running, delayed, avgSpeed });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateBusStatus = async (req, res) => {
+  try {
+    const { busId } = req.params;
+    const { status, delayReason, delayMinutes } = req.body;
+
+    const bus = await Bus.findByIdAndUpdate(
+      busId,
+      {
+        status,
+        delayReason: delayReason || "none",
+        delayMinutes: delayMinutes || 0,
+        lastUpdateTime: new Date(),
+      },
+      { new: true },
+    ).populate("route");
+
+    return res.json({
+      success: true,
+      message: "Bus status updated",
+      bus: shapeBusPayload(bus),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

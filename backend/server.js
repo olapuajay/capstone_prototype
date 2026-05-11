@@ -4,8 +4,10 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 import busRoutes from "./routes/busRoutes.js";
 import routeRoutes from "./routes/routeRoutes.js";
+import ticketRoutes from "./routes/ticketRoutes.js";
 import { seedInitialData } from "./services/seedDataService.js";
 import { startSimulationService } from "./services/simulationService.js";
 import { initializeSocket } from "./socket/socketHandler.js";
@@ -18,7 +20,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST", "PUT"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 
@@ -30,29 +32,23 @@ app.use(
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "bus-tracker-backend" });
+  res.json({ status: "ok", service: "smartbus-tracker-backend" });
 });
 
-app.post("/api/admin/login", (req, res) => {
-  const { username, password } = req.body;
+// Auth routes
+app.use("/api/auth", authRoutes);
 
-  const expectedUsername = process.env.ADMIN_USERNAME || "admin";
-  const expectedPassword = process.env.ADMIN_PASSWORD || "admin123";
-
-  if (username === expectedUsername && password === expectedPassword) {
-    return res.json({ success: true });
-  }
-
-  return res
-    .status(401)
-    .json({ success: false, message: "Invalid credentials" });
-});
-
+// Bus routes
 app.use("/api/buses", busRoutes);
+
+// Route routes
 app.use("/api/routes", routeRoutes);
 
+// Ticket routes
+app.use("/api/tickets", ticketRoutes);
+
 app.get("/", (req, res) => {
-  res.send({ message: "Hello from server!" });
+  res.send({ message: "SmartBus Tracker Backend" });
 });
 
 const PORT = process.env.PORT || 5000;
@@ -65,7 +61,7 @@ const bootstrap = async () => {
   startSimulationService(io);
 
   server.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`SmartBus Tracker Backend listening on port ${PORT}`);
   });
 };
 

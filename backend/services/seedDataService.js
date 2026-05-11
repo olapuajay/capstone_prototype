@@ -1,63 +1,59 @@
 import Bus from "../models/Bus.js";
 import Route from "../models/Route.js";
+import User from "../models/User.js";
 
 const defaultRoutes = [
   {
-    busName: "Bus 1",
-    name: "Ludhiana -> Jalandhar",
-    from: "Ludhiana",
-    to: "Jalandhar",
+    busNumber: "TS-01-AB-1001",
+    busName: "SmartBus 1",
+    name: "Hyderabad Central -> Secunderabad Station",
+    from: "Hyderabad",
+    to: "Secunderabad",
     points: [
-      { lat: 30.901, lng: 75.8573, stopName: "Ludhiana ISBT" },
-      { lat: 31.0075, lng: 75.9512, stopName: "Phillaur" },
-      { lat: 31.1828, lng: 75.7022, stopName: "Jalandhar Bus Stand" },
+      {
+        lat: 17.3629,
+        lng: 78.4745,
+        stopName: "Hyderabad Central Bus Station",
+      },
+      { lat: 17.3735, lng: 78.4821, stopName: "Abids" },
+      { lat: 17.3825, lng: 78.4897, stopName: "SD Road" },
+      { lat: 17.3915, lng: 78.5001, stopName: "Nampally" },
+      { lat: 17.4045, lng: 78.5087, stopName: "Secunderabad Station" },
     ],
   },
   {
-    busName: "Bus 2",
-    name: "Amritsar -> Jalandhar",
-    from: "Amritsar",
-    to: "Jalandhar",
+    busNumber: "TS-01-AB-1002",
+    busName: "SmartBus 2",
+    name: "Hyderabad -> Gachibowli",
+    from: "Hyderabad",
+    to: "Gachibowli",
     points: [
-      { lat: 31.634, lng: 74.8723, stopName: "Amritsar ISBT" },
-      { lat: 31.6225, lng: 75.371, stopName: "Beas" },
-      { lat: 31.326, lng: 75.5762, stopName: "Kartarpur" },
-      { lat: 31.326, lng: 75.5762, stopName: "Jalandhar City Entry" },
-      { lat: 31.1828, lng: 75.7022, stopName: "Jalandhar Bus Stand" },
+      {
+        lat: 17.3629,
+        lng: 78.4745,
+        stopName: "Hyderabad Central Bus Station",
+      },
+      { lat: 17.3542, lng: 78.4512, stopName: "Kacheguda Station" },
+      { lat: 17.3298, lng: 78.4159, stopName: "Lallaguda" },
+      { lat: 17.4328, lng: 78.4427, stopName: "Gachibowli Circle" },
     ],
   },
   {
-    busName: "Bus 3",
-    name: "Patiala -> Chandigarh",
-    from: "Patiala",
-    to: "Chandigarh",
+    busNumber: "TS-01-AB-1003",
+    busName: "SmartBus 3",
+    name: "Hyderabad -> HITEC City",
+    from: "Hyderabad",
+    to: "HITEC City",
     points: [
-      { lat: 30.3398, lng: 76.3869, stopName: "Patiala Bus Stand" },
-      { lat: 30.4835, lng: 76.5948, stopName: "Rajpura" },
-      { lat: 30.7046, lng: 76.7179, stopName: "Zirakpur" },
-      { lat: 30.7333, lng: 76.7794, stopName: "Chandigarh ISBT" },
-    ],
-  },
-  {
-    busName: "Bus 4",
-    name: "Mohali -> Chandigarh",
-    from: "Mohali",
-    to: "Chandigarh",
-    points: [
-      { lat: 30.7046, lng: 76.7179, stopName: "Mohali Phase 7" },
-      { lat: 30.7214, lng: 76.7411, stopName: "Sector 43" },
-      { lat: 30.7333, lng: 76.7794, stopName: "Chandigarh ISBT" },
-    ],
-  },
-  {
-    busName: "Bus 5",
-    name: "Bathinda -> Mansa",
-    from: "Bathinda",
-    to: "Mansa",
-    points: [
-      { lat: 30.211, lng: 74.9455, stopName: "Bathinda Bus Stand" },
-      { lat: 29.986, lng: 75.2441, stopName: "Maur Mandi" },
-      { lat: 29.9889, lng: 75.4017, stopName: "Mansa Bus Stand" },
+      {
+        lat: 17.3629,
+        lng: 78.4745,
+        stopName: "Hyderabad Central Bus Station",
+      },
+      { lat: 17.3765, lng: 78.4965, stopName: "Secunderabad" },
+      { lat: 17.4536, lng: 78.5515, stopName: "Ameerpet" },
+      { lat: 17.4583, lng: 78.6165, stopName: "Madhapur" },
+      { lat: 17.4614, lng: 78.6368, stopName: "HITEC City" },
     ],
   },
 ];
@@ -66,31 +62,91 @@ const randomSpeed = () => Math.round(35 + Math.random() * 15);
 
 export const seedInitialData = async () => {
   const busCount = await Bus.countDocuments();
+  const userCount = await User.countDocuments();
 
-  if (busCount > 0) {
+  if (busCount > 0 && userCount > 0) {
     return;
   }
 
-  for (const routeSeed of defaultRoutes) {
-    const route = await Route.create({
-      name: routeSeed.name,
-      from: routeSeed.from,
-      to: routeSeed.to,
-      points: routeSeed.points,
-    });
+  // Seed users (drivers) if not already present
+  if (userCount === 0) {
+    // Create test drivers
+    await User.create([
+      {
+        name: "Rajesh Kumar",
+        email: "driver@smartbus.com",
+        mobile: "9876543210",
+        password: "driver123",
+        role: "driver",
+        licenseNumber: "DL-01-1234",
+        isActive: true,
+      },
+      {
+        name: "Priya Singh",
+        email: "driver2@smartbus.com",
+        mobile: "9876543211",
+        password: "driver123",
+        role: "driver",
+        licenseNumber: "DL-01-1235",
+        isActive: true,
+      },
+      {
+        name: "Vikram Patel",
+        email: "driver3@smartbus.com",
+        mobile: "9876543212",
+        password: "driver123",
+        role: "driver",
+        licenseNumber: "DL-01-1236",
+        isActive: true,
+      },
+    ]);
 
-    const startPoint = routeSeed.points[0];
-
-    await Bus.create({
-      name: routeSeed.busName,
-      route: route._id,
-      speed: randomSpeed(),
-      currentPointIndex: 0,
-      currentLocation: { lat: startPoint.lat, lng: startPoint.lng },
-      status: "Running",
-      delayMinutes: 0,
-    });
+    console.log("Seeded 3 test drivers");
   }
 
-  console.log("Seeded initial routes and buses");
+  // Seed buses and routes if not already present
+  if (busCount === 0) {
+    const drivers = await User.find({ role: "driver" });
+    const createdBuses = [];
+
+    for (let i = 0; i < defaultRoutes.length; i++) {
+      const routeSeed = defaultRoutes[i];
+      const route = await Route.create({
+        name: routeSeed.name,
+        from: routeSeed.from,
+        to: routeSeed.to,
+        points: routeSeed.points,
+      });
+
+      const startPoint = routeSeed.points[0];
+      const driver = drivers[i] || null;
+
+      const bus = await Bus.create({
+        busNumber: routeSeed.busNumber,
+        name: routeSeed.busName,
+        route: route._id,
+        driver: driver ? driver._id : null,
+        speed: randomSpeed(),
+        currentPointIndex: 0,
+        currentLocation: { lat: startPoint.lat, lng: startPoint.lng },
+        status: "Running",
+        delayReason: "none",
+        delayMinutes: 0,
+        capacity: 50,
+        currentPassengers: Math.floor(Math.random() * 40) + 10,
+      });
+
+      if (driver) {
+        createdBuses.push({ driver, bus });
+      }
+    }
+
+    // Assign buses to drivers
+    for (const { driver, bus } of createdBuses) {
+      driver.busAssigned = bus._id;
+      await driver.save();
+    }
+
+    console.log("Seeded 3 initial routes and buses for Telangana");
+  }
 };

@@ -2,11 +2,17 @@ import mongoose from "mongoose";
 
 const busSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    busNumber: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     route: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Route",
       required: true,
+    },
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
     speed: { type: Number, default: 40 },
     currentPointIndex: { type: Number, default: 0 },
@@ -16,10 +22,25 @@ const busSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Running", "Delayed"],
+      enum: ["Running", "Delayed", "Heavy Traffic", "Breakdown", "Inactive"],
       default: "Running",
     },
     delayMinutes: { type: Number, default: 0 },
+    delayReason: {
+      type: String,
+      enum: [
+        "traffic",
+        "road_construction",
+        "weather",
+        "mechanical",
+        "crowd",
+        "none",
+      ],
+      default: "none",
+    },
+    capacity: { type: Number, default: 50 },
+    currentPassengers: { type: Number, default: 0 },
+    lastUpdateTime: { type: Date, default: Date.now },
   },
   { timestamps: true },
 );

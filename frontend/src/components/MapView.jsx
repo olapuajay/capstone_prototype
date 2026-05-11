@@ -11,7 +11,7 @@ const mapContainerStyle = {
   height: "100%",
 };
 
-const centerPunjab = { lat: 31.1471, lng: 75.3412 };
+const centerHyderabad = { lat: 17.3629, lng: 78.4745 };
 
 const mapOptions = {
   streetViewControl: false,
@@ -30,6 +30,10 @@ const buildBusIcon = () => ({
 });
 
 const buildFilteredBuses = (buses, selectedBusId) => {
+  if (!buses || !Array.isArray(buses)) {
+    return [];
+  }
+
   if (selectedBusId === "ALL") {
     return buses;
   }
@@ -58,7 +62,7 @@ const MapView = ({ buses, selectedBusId }) => {
     <div className="glass-panel card-enter h-[430px] overflow-hidden sm:h-[540px]">
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
-        center={centerPunjab}
+        center={centerHyderabad}
         zoom={8}
         options={mapOptions}
       >

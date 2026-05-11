@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Loader from "../components/Loader";
 import { useBusContext } from "../context/BusContext";
 
@@ -11,6 +11,7 @@ const AdminDashboard = () => {
   const [editingRouteId, setEditingRouteId] = useState("");
   const [credentials, setCredentials] = useState(ADMIN_DEFAULT);
   const [error, setError] = useState("");
+  const [tickets, setTickets] = useState([]);
   const [form, setForm] = useState({
     name: "",
     from: "",
@@ -30,12 +31,51 @@ const AdminDashboard = () => {
     setError("");
 
     try {
-      await axios.post(`${apiBase}/admin/login`, credentials);
+      const response = await axios.post(
+        `${apiBase}/auth/admin/login`,
+        credentials,
+      );
+      localStorage.setItem("token", response.data.token);
       setIsAuthenticated(true);
+      fetchTickets();
     } catch {
       setError("Invalid credentials. Use admin / admin123");
     }
   };
+
+  const fetchTickets = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${apiBase}/tickets`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTickets(response.data.tickets || []);
+    } catch (err) {
+      console.error("Error fetching tickets:", err);
+    }
+  };
+
+  const updateTicketStatus = async (ticketId, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${apiBase}/tickets/${ticketId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      fetchTickets();
+    } catch (err) {
+      console.error("Error updating ticket:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTickets();
+      const interval = setInterval(fetchTickets, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   const onSubmitRoute = async (event) => {
     event.preventDefault();
@@ -242,7 +282,57 @@ const AdminDashboard = () => {
       </div>
 
       <div className="glass-panel card-enter p-4">
-        <h3 className="brand-font text-xl font-semibold">Delay Alerts</h3>
+        <h3 className="brand-font text-xl font-semibold">
+          Passenger Complaints
+        </h3>
+        {tickets.length === 0 ? (
+          <p className="mt-2 text-sm text-slate-400">No complaints yet.</p>
+        ) : (
+          <div className="mt-3 space-y-3 text-sm">
+            {tickets.map((ticket) => (
+              <div
+                key={ticket._id}
+                className="rounded-xl border border-white/10 bg-white/5 p-3"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <p className="font-semibold">
+                      {ticket.passenger?.name || "Unknown"} ({ticket.category})
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      {ticket.message}
+                    </p>
+                    <p className="mt-2 text-xs text-slate-500">
+                      {new Date(ticket.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="ml-3 flex flex-col gap-2">
+                    <select
+                      value={ticket.status}
+                      onChange={(e) =>
+                        updateTicketStatus(ticket._id, e.target.value)
+                      }
+                      className={`rounded px-2 py-1 text-xs font-semibold ${
+                        ticket.status === "open"
+                          ? "bg-warning/20 text-warning"
+                          : ticket.status === "in_progress"
+                            ? "bg-blue-500/20 text-blue-400"
+                            : "bg-accent/20 text-accent"
+                      }`}
+                    >
+                      <option value="open">Open</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="glass-panel card-enter p-4">
         {delayAlerts.length === 0 ? (
           <p className="mt-2 text-sm text-slate-400">
             No active delays right now.
