@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -9,7 +10,8 @@ const App = () => {
       <Navbar />
       <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/tracker" element={<Home />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>

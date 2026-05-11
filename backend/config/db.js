@@ -8,7 +8,6 @@ const connectDB = async () => {
       throw new Error("MONGO_URI is not configured");
     }
 
-    // Assumption: this is a traditional long-running Node server for a capstone demo.
     await mongoose.connect(mongoUri, {
       maxPoolSize: 20,
       minPoolSize: 5,
