@@ -45,29 +45,44 @@ const simulateTick = async (io) => {
       nextSpeed,
     );
 
-    // Randomly determine delay reason (5% chance of delay)
-    const shouldBeDelayed = Math.random() < 0.05;
-    let delayReason = "none";
-    const delayReasons = [
-      "traffic",
-      "road_construction",
-      "weather",
-      "mechanical",
-      "crowd",
-    ];
+    // Check if driver has manually set status (and it hasn't expired yet)
+    const isManualStatusActive =
+      bus.manualStatusUntil && new Date() < bus.manualStatusUntil;
 
-    const isDelayed = etaToNextStop > 30 || shouldBeDelayed;
-    if (isDelayed) {
-      delayReason =
-        delayReasons[Math.floor(Math.random() * delayReasons.length)];
+    // Only update status if it's not manually set by driver
+    let updatedStatus = bus.status;
+    let updatedDelayMinutes = bus.delayMinutes;
+    let updatedDelayReason = bus.delayReason;
+
+    if (!isManualStatusActive) {
+      // Randomly determine delay reason (5% chance of delay)
+      const shouldBeDelayed = Math.random() < 0.05;
+      let delayReason = "none";
+      const delayReasons = [
+        "traffic",
+        "road_construction",
+        "weather",
+        "mechanical",
+        "crowd",
+      ];
+
+      const isDelayed = etaToNextStop > 30 || shouldBeDelayed;
+      if (isDelayed) {
+        delayReason =
+          delayReasons[Math.floor(Math.random() * delayReasons.length)];
+      }
+
+      updatedStatus = isDelayed ? "Delayed" : "Running";
+      updatedDelayMinutes = isDelayed ? Math.max(1, etaToNextStop - 30) : 0;
+      updatedDelayReason = delayReason;
     }
 
     bus.speed = nextSpeed;
     bus.currentPointIndex = nextPointIndex;
     bus.currentLocation = { lat: nextPoint.lat, lng: nextPoint.lng };
-    bus.status = isDelayed ? "Delayed" : "Running";
-    bus.delayMinutes = isDelayed ? Math.max(1, etaToNextStop - 30) : 0;
-    bus.delayReason = delayReason;
+    bus.status = updatedStatus;
+    bus.delayMinutes = updatedDelayMinutes;
+    bus.delayReason = updatedDelayReason;
     bus.currentPassengers = clamp(
       bus.currentPassengers + Math.floor(Math.random() * 5 - 2),
       0,

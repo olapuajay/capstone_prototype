@@ -82,6 +82,9 @@ export const updateBusStatus = async (req, res) => {
     const { busId } = req.params;
     const { status, delayReason, delayMinutes } = req.body;
 
+    // Set manual status to expire in 30 minutes
+    const manualStatusUntil = new Date(Date.now() + 30 * 60 * 1000);
+
     const bus = await Bus.findByIdAndUpdate(
       busId,
       {
@@ -89,6 +92,7 @@ export const updateBusStatus = async (req, res) => {
         delayReason: delayReason || "none",
         delayMinutes: delayMinutes || 0,
         lastUpdateTime: new Date(),
+        manualStatusUntil,
       },
       { new: true },
     ).populate("route");

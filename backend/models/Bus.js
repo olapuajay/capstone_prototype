@@ -41,6 +41,7 @@ const busSchema = new mongoose.Schema(
     capacity: { type: Number, default: 50 },
     currentPassengers: { type: Number, default: 0 },
     lastUpdateTime: { type: Date, default: Date.now },
+    manualStatusUntil: { type: Date, default: null },
   },
   { timestamps: true },
 );
