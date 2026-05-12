@@ -12,6 +12,9 @@ import {
 import { useAuthContext } from "../context/AuthContext";
 import MapView from "../components/MapView";
 
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 const PassengerDashboard = () => {
   const { t } = useTranslation();
   const { user, logout } = useAuthContext();
@@ -32,7 +35,7 @@ const PassengerDashboard = () => {
 
   const fetchBuses = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/buses");
+      const response = await fetch(`${API_BASE}/buses`);
       const data = await response.json();
       setBuses(data);
     } catch (error) {
@@ -44,14 +47,11 @@ const PassengerDashboard = () => {
 
   const fetchTickets = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/tickets/my-tickets",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      const response = await fetch(`${API_BASE}/tickets/my-tickets`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
       const data = await response.json();
       setTickets(data.tickets || []);
     } catch (error) {
@@ -66,7 +66,7 @@ const PassengerDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/tickets", {
+      const response = await fetch(`${API_BASE}/tickets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

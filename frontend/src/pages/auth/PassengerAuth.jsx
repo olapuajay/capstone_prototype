@@ -3,6 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
 import { useAuthContext } from "../../context/AuthContext";
 
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 const PassengerAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,14 +34,14 @@ const PassengerAuth = () => {
 
     try {
       const endpoint = isLogin
-        ? "/api/auth/passenger/login"
-        : "/api/auth/passenger/register";
+        ? "/auth/passenger/login"
+        : "/auth/passenger/register";
 
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import { Truck, AlertCircle, Send } from "lucide-react";
 import { useAuthContext } from "../context/AuthContext";
 
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 const DriverPanel = () => {
   const { t } = useTranslation();
   const { user, logout } = useAuthContext();
@@ -20,9 +23,7 @@ const DriverPanel = () => {
   const fetchAssignedBus = async () => {
     try {
       if (user?.busAssigned) {
-        const response = await fetch(
-          `http://localhost:5000/api/buses/${user.busAssigned}`,
-        );
+        const response = await fetch(`${API_BASE}/buses/${user.busAssigned}`);
         const data = await response.json();
         setAssignedBus(data);
         setBusStatus(data.status);
@@ -39,7 +40,7 @@ const DriverPanel = () => {
   const handleStatusUpdate = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/buses/${assignedBus.id}/status`,
+        `${API_BASE}/buses/${assignedBus.id}/status`,
         {
           method: "PUT",
           headers: {
