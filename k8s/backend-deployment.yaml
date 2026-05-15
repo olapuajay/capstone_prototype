@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: backend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+      - name: backend
+        image: pranee18/backend:v1
+
+        ports:
+        - containerPort: 5000
+        
+        env:
+        - name: MONGO_URI
+          value: mongodb+srv://olapuajay:viratkohli@cluster0.ypd9d9t.mongodb.net/capstone_ptype?appName=Cluster0
+
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        volumeMounts:
+        - mountPath: "/data"
+          name: backend-storage
+
+      volumes:
+      - name: backend-storage
+        persistentVolumeClaim:
+          claimName: app-pvc
